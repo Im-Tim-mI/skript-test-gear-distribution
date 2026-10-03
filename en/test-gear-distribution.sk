@@ -1,0 +1,179 @@
+# ------------------------------------------------------------
+#  skript-test-gear-distribution (English edition)
+#  https://github.com/Im-Tim-mI/skript-test-gear-distribution
+#  Copyright (c) 2026 廷廷小教室、廷廷的家（Tim945）
+#  License: MIT + Commons Clause (see LICENSE)
+# ------------------------------------------------------------
+
+# ============================================
+# Test Gear Distribution
+# Elytra + full diamond armor + fireworks
+# ============================================
+
+options:
+    prefix: &e[&6Test Gear&e]
+    item_name: &bTest Item
+
+# ============================================
+# Give test gear
+# ============================================
+command /givetestgear [<player>]:
+    permission: op
+    trigger:
+        if arg-1 is set:
+            giveTestGear(arg-1)
+            send "{@prefix} &aGave test gear to &e%arg-1%&a!" to player
+        else:
+            loop all players:
+                giveTestGear(loop-player)
+            send "{@prefix} &aGave test gear to &e%size of all players% &aplayers!" to player
+
+# ============================================
+# Function: give the gear
+# ============================================
+function giveTestGear(p: player):
+    # Diamond helmet
+    set {_helmet} to diamond helmet named "{@item_name}" with lore "&7This is a test item" and "&cVanishes on death, can't be taken off"
+    enchant {_helmet} with unbreaking 3
+    enchant {_helmet} with mending 1
+    enchant {_helmet} with binding curse 1
+    enchant {_helmet} with vanishing curse 1
+    set helmet of {_p} to {_helmet}
+
+    # Diamond chestplate -> replaced with an elytra
+    set {_elytra} to elytra named "{@item_name}" with lore "&7This is a test item" and "&cVanishes on death, can't be taken off"
+    enchant {_elytra} with unbreaking 3
+    enchant {_elytra} with mending 1
+    enchant {_elytra} with binding curse 1
+    enchant {_elytra} with vanishing curse 1
+    set chestplate of {_p} to {_elytra}
+
+    # Diamond leggings
+    set {_leggings} to diamond leggings named "{@item_name}" with lore "&7This is a test item" and "&cVanishes on death, can't be taken off"
+    enchant {_leggings} with unbreaking 3
+    enchant {_leggings} with mending 1
+    enchant {_leggings} with binding curse 1
+    enchant {_leggings} with vanishing curse 1
+    set leggings of {_p} to {_leggings}
+
+    # Diamond boots
+    set {_boots} to diamond boots named "{@item_name}" with lore "&7This is a test item" and "&cVanishes on death, can't be taken off"
+    enchant {_boots} with unbreaking 3
+    enchant {_boots} with mending 1
+    enchant {_boots} with binding curse 1
+    enchant {_boots} with vanishing curse 1
+    set boots of {_p} to {_boots}
+
+    # 5 stacks of fireworks (64 x 5 = 320)
+    give 320 firework rocket to {_p}
+
+    # Tell the player
+    send "{@prefix} &aYou received test gear!" to {_p}
+    send "&7- Diamond Helmet (Curse of Binding, Curse of Vanishing)" to {_p}
+    send "&7- Elytra (Curse of Binding, Curse of Vanishing)" to {_p}
+    send "&7- Diamond Leggings (Curse of Binding, Curse of Vanishing)" to {_p}
+    send "&7- Diamond Boots (Curse of Binding, Curse of Vanishing)" to {_p}
+    send "&7- Firework Rocket x 320" to {_p}
+    send "&cNote: this gear vanishes when you die and can't be taken off!" to {_p}
+    play sound "ENTITY_PLAYER_LEVELUP" with volume 1 to {_p}
+
+# ============================================
+# Recall and destroy (one player)
+# ============================================
+command /recalltestgear [<player>]:
+    permission: op
+    trigger:
+        if arg-1 is set:
+            recallTestGear(arg-1)
+            send "{@prefix} &cRecalled &e%arg-1%&c's test gear!" to player
+        else:
+            send "{@prefix} &cUsage: /recalltestgear <player>" to player
+            send "{@prefix} &7Or use /recallalltestgear to recall it from everyone" to player
+
+# ============================================
+# Recall the gear from all players
+# ============================================
+command /recallalltestgear:
+    permission: op
+    trigger:
+        set {_count} to 0
+        loop all players:
+            recallTestGear(loop-player)
+            add 1 to {_count}
+        send "{@prefix} &cRecalled test gear from &e%{_count}% &cplayers!" to player
+
+# ============================================
+# Function: recall the gear
+# ============================================
+function recallTestGear(p: player):
+    # Check and remove the helmet
+    if name of helmet of {_p} is "{@item_name}":
+        set helmet of {_p} to air
+
+    # Check and remove the chestplate / elytra
+    if name of chestplate of {_p} is "{@item_name}":
+        set chestplate of {_p} to air
+
+    # Check and remove the leggings
+    if name of leggings of {_p} is "{@item_name}":
+        set leggings of {_p} to air
+
+    # Check and remove the boots
+    if name of boots of {_p} is "{@item_name}":
+        set boots of {_p} to air
+
+    # Remove test gear from the inventory (fireworks are kept)
+    loop all items in {_p}'s inventory:
+        if name of loop-item is "{@item_name}":
+            remove loop-item from {_p}'s inventory
+
+    # Tell the player
+    send "{@prefix} &cYour test gear has been recalled!" to {_p}
+    send "&7Your fireworks are not affected - keep using them." to {_p}
+    play sound "ENTITY_ITEM_BREAK" with volume 1 to {_p}
+
+# ============================================
+# See who has test gear
+# ============================================
+command /checktestgear:
+    permission: op
+    trigger:
+        send "{@prefix} &ePlayers who have test gear:" to player
+        set {_count} to 0
+        loop all players:
+            set {_has} to false
+            if name of helmet of loop-player is "{@item_name}":
+                set {_has} to true
+            if name of chestplate of loop-player is "{@item_name}":
+                set {_has} to true
+            if name of leggings of loop-player is "{@item_name}":
+                set {_has} to true
+            if name of boots of loop-player is "{@item_name}":
+                set {_has} to true
+
+            if {_has} is true:
+                add 1 to {_count}
+                send "&7- &a%loop-player%" to player
+
+        if {_count} is 0:
+            send "&7No players have test gear" to player
+        else:
+            send "&eTotal: &a%{_count}% &eplayers" to player
+
+# ============================================
+# Prevent dropping test gear
+# ============================================
+on drop:
+    if name of event-item is "{@item_name}":
+        cancel event
+        send "{@prefix} &cYou can't drop test gear!" to player
+
+# ============================================
+# Prevent putting it into containers
+# ============================================
+on inventory click:
+    if event-inventory is not player's inventory:
+        if cursor slot of player is not air:
+            if name of cursor slot of player is "{@item_name}":
+                cancel event
+                send "{@prefix} &cYou can't put test gear into containers!" to player
