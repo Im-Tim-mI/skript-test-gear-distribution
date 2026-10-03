@@ -6,6 +6,18 @@ Equips testers with temporary gear - diamond armor with an elytra, all with Curs
 
 > This repository has two editions of the same script: **繁體中文 (zh-TW)** is the original used on the author's Traditional Chinese server, and **English** is a full translation (commands, messages and variable names) with the same features.
 
+<!-- BEGIN LIVE SCREENSHOTS -->
+
+## Screenshots
+
+![Inventory after receiving the test gear](docs/images/test-gear-inventory.png)
+
+*A throwaway test account right after `/發放測試裝備`: full diamond armour plus an elytra, all tagged `測試用道具`, and five stacks of firework rockets.*
+
+> These are live-server captures, not native client screenshots. A headless client logged into a real Paper 26.2 server, triggered the script, and the block / UI data the server sent back was re-rendered using the official Minecraft 26.2 client assets. Mojang/Microsoft image assets are not covered by this repository's code licence.
+
+<!-- END LIVE SCREENSHOTS -->
+
 ## Features
 
 - Puts the gear straight into the armor slots (helmet, elytra, leggings, boots)
